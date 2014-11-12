@@ -51,7 +51,7 @@ function Boid(x, y) {
                   Math.round(Math.random() * window.innerHeight)
                 );
   this.vel = new Vector(Math.random()*2-1, Math.random()*2-1).normalize();
-  this.speed = Math.random()*3 + 2;
+  this.speed = 2;
 }
 
 var boids = [];
@@ -59,10 +59,7 @@ for(var i=0; i<boidCount; i++) {
   boids.push(new Boid(Math.random() * 400, Math.random() * 400));
 }
 
-var mouse = {
-  x: 0,
-  y: 0
-}
+var mouse = new Vector(0, 0);
 
 document.addEventListener('mousemove', function(e) {
   mouse.x = e.clientX || e.pageX;
@@ -126,6 +123,16 @@ var wind = function(boids, j) {
   return new Vector(0.5, 0.7);
 }
 
+var moveToMouse = function(boids, j) {
+  var v = mouse.clone().subtract(boids[j].loc);
+
+  v.x /= 100;
+  v.y /= 100;
+
+  return v;
+
+}
+
 ticker(window, 60).on('tick', function() {
 
   boids.forEach(function(boid, i) {
@@ -135,6 +142,7 @@ ticker(window, 60).on('tick', function() {
     rules.push(separation(boids, i));
     rules.push(alignment(boids, i));
     rules.push(wind(boids, i));
+    rules.push(moveToMouse(boids, i));
 
     rules.forEach(function(rule) {
       boid.vel.x = boid.vel.x + rule.x;
