@@ -1,0 +1,8 @@
+{
+  "name": "boids",
+  "version": "0.0.1",
+  "devDependencies": {
+    "debounce": "^1.0.0",
+    "ticker": "^0.1.0"
+  }
+}
