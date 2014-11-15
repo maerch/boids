@@ -12,7 +12,10 @@ gulp.task('default', function() {
 });
 
 gulp.task('coffee', function() {
+  console.log("Ehmt ")
   gulp.src('./src/*.coffee')
       .pipe(coffee({bare: true}).on('error', console.log))
+      .pipe(browserify())
+      .pipe(rename("bundle.js"))
       .pipe(gulp.dest('./public/'));
 })
