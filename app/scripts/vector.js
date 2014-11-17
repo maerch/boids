@@ -10,6 +10,12 @@ function Vector(x, y) {
     return this;
   }
 
+  this.scale = function(factor) {
+    this.x *= factor;
+    this.y *= factor;
+    return this;
+  }
+
   this.subtract = function(vector) {
     this.x -= vector.x;
     this.y -= vector.y;

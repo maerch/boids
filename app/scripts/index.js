@@ -6,7 +6,7 @@ var Boid     = require('./boid.js');
 
 var rules    = require('./rules.js');
 
-var boidCount = 50;
+var boidCount = 100;
 var fps       = 60;
 var canvas   = document.createElement('canvas');
 var ctx      = canvas.getContext('2d');
@@ -35,7 +35,7 @@ document.body.style.margin  = '0';
 document.body.style.padding = '0';
 document.body.appendChild(canvas);
 
-ticker(window, fps).on('tick', function() {
+ticker(window, 60).on('tick', function() {
 
   boids.forEach(function(boid, i) {
 
@@ -50,10 +50,13 @@ ticker(window, fps).on('tick', function() {
       boid.vel.y = boid.vel.y + rule.y;
     })
 
-    boid.vel.normalize();
+    var len = boid.vel.length();
+    if(len>3) {
+      boid.vel.normalize().scale(3);
+    }
 
-    boid.loc.x += boid.vel.x * boid.speed;
-    boid.loc.y += boid.vel.y * boid.speed;
+    boid.loc.x += boid.vel.x
+    boid.loc.y += boid.vel.y
 
     if(boid.loc.y > canvas.height) {
       boid.loc.y = 0;
