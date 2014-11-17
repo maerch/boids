@@ -1,21 +1,13 @@
 var gulp       = require('gulp');
-var rename     = require('gulp-rename');
-var browserify = require('gulp-browserify');
-var watch      = require('gulp-watch');
-var coffee     = require('gulp-coffee');
+var browserify = require('browserify');
+var transform  = require('vinyl-transform');
 
-gulp.task('default', function() {
-  watch("index.js")
-      .pipe(browserify())
-      .pipe(rename("bundle.js"))
-      .pipe(gulp.dest('public/'));
-});
+gulp.task("browserify", function() {
+  var browserified = transform(function(filename) {
+    return browserify(filename).bundle();
+  });
 
-gulp.task('coffee', function() {
-  console.log("Ehmt ")
-  gulp.src('./src/*.coffee')
-      .pipe(coffee({bare: true}).on('error', console.log))
-      .pipe(browserify())
-      .pipe(rename("bundle.js"))
-      .pipe(gulp.dest('./public/'));
+  return gulp.src(["./app/scripts/*.js"])
+             .pipe(browserified)
+             .pipe(gulp.dest('./public/js'));
 })
