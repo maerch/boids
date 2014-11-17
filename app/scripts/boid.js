@@ -1,4 +1,4 @@
-var Vector = require('./vector.js');
+var Vector = require('./vector');
 
 function Boid(x, y) {
   this.loc = new Vector(

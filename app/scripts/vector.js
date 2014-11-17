@@ -33,12 +33,6 @@ function Vector(x, y) {
   this.distanceTo = function(anotherVector) {
     return Math.sqrt(Math.pow(this.x - anotherVector.x, 2) + Math.pow(this.y - anotherVector.y, 2));
   }
-
-  this.wrap = function() {
-    this.x = Math.min(this.x, canvas.width  - this.x);
-    this.y = Math.min(this.y, canvas.height - this.y);
-    return this;
-  }
 }
 
 module.exports = Vector
