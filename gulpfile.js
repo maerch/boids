@@ -1,11 +1,12 @@
 var gulp       = require('gulp');
 var browserify = require('browserify');
 var transform  = require('vinyl-transform');
+var sass       = require('gulp-sass');
 
 var paths = {
   scripts: "app/scripts/*.js",
   html:    "app/*.html",
-  styles:  "app/styles/*.css"
+  sass:    "app/sass/*.sass"
 }
 
 gulp.task("browserify", function() {
@@ -23,16 +24,22 @@ gulp.task("html", function() {
               .pipe(gulp.dest("./public"))
 })
 
-gulp.task("styles", function() {
-  return gulp.src([paths.styles])
+gulp.task("sass", function() {
+  return gulp.src([paths.sass])
+              .pipe(sass({
+                errLogToConsole: true, 
+                // Due to a bug we need this to handle
+                // sass syntax instead scss
+                sourceComments: 'normal'
+              }))
               .pipe(gulp.dest("./public/css"))
 })
 
 gulp.task("watch", function() {
   gulp.watch(paths.scripts, ["browserify"]);
   gulp.watch(paths.html, ["html"]);
-  gulp.watch(paths.styles, ["styles"]);
+  gulp.watch(paths.sass, ["sass"]);
 })
 
-gulp.task("copy", ["html", "styles"]);
+gulp.task("copy", ["html", "sass"]);
 gulp.task("default", ["browserify", "copy", "watch"]);
