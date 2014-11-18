@@ -39,6 +39,7 @@ rules.neighbors = function(boids, j, radius) {
 rules.cohesion = function(boids, j) {
   var neighbors = rules.neighbors(boids, j, 50);
   neighbors.push(boids[j]);
+  if(neighbors.length === 0) return new Vector(0, 0);
   var cntr = rules.center(neighbors, neighbors.length-1);
 
   cntr.subtract(boids[j].loc);
@@ -69,12 +70,13 @@ rules.separation = function(boids, j) {
 rules.alignment = function(boids, j) {
   var vector = new Vector(0, 0);
   var neighbors = rules.neighbors(boids, j, 150);
+  if(neighbors.length === 0) return new Vector(0, 0);
   for(var i=0; i<neighbors.length; i++) {
     vector.x += neighbors[i].vel.x
     vector.y += neighbors[i].vel.y
   }
-  vector.x /= (neighbors.length-1)
-  vector.y /= (neighbors.length-1)
+  vector.x /= (neighbors.length)
+  vector.y /= (neighbors.length)
 
   vector.subtract(boids[j].vel);
   vector.x /= 8
