@@ -72,6 +72,16 @@ var drawBoid = function(boid) {
   ctx.stroke();
 }
 
+var pattern;
+var img = new Image();
+img.src = 'http://subtlepatterns.com/patterns/subtle_carbon.png'
+
+img.onload = function(){
+    pattern = ctx.createPattern(img, 'repeat'); 
+    ctx.fillStyle = pattern;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
 ticker(window, 60).on('tick', function() {
 
   boids.forEach(function(boid, i) {
@@ -117,7 +127,7 @@ ticker(window, 60).on('tick', function() {
   var halfHeight = canvas.height/2
   var halfWidth  = canvas.width/2
 
-  ctx.fillStyle = "rgba(0, 0, 0, 1)";
+  ctx.fillStyle = pattern;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   boids.forEach(function(boid, i) {
     drawBoid(boid);
