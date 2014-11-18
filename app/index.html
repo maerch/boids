@@ -2,10 +2,12 @@
 <head>
   <meta charset="utf-8">
   <title>Boids</title>
+  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="css/styles.css">
 </head>
 <body>
-  <div id="controls">
+  <div id="menu-trigger"><i class="fa fa-bars"></i></div>
+  <div id="slide-controls">
   <h3>Rules</h3>
     <form>
       <input type="checkbox" name="rules" id="cohesion"> Cohesion<br>
@@ -15,6 +17,12 @@
     </form>
   </div>
   <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript">
+    $("#menu-trigger").on('click', function() {
+      $("body").toggleClass("active");
+      console.log("clicked");
+    });
+  </script>
   <script type="text/javascript" src="js/index.js"></script>
 </body>
 </html>
