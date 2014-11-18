@@ -6,7 +6,7 @@ var Boid     = require('./boid.js');
 
 var rules    = require('./rules.js');
 
-var boidCount = 100;
+var boidCount = 50;
 var fps       = 60;
 var canvas   = document.createElement('canvas');
 var ctx      = canvas.getContext('2d');
@@ -35,10 +35,42 @@ document.body.style.margin  = '0';
 document.body.style.padding = '0';
 document.body.appendChild(canvas);
 
-var cohesion   = false;
-var alignment  = false;
-var separation = false;
+var cohesion   = true;
+var alignment  = true;
+var separation = true;
 var wind       = false;
+
+var drawBoid = function(boid) {
+  var scale = 5
+
+  ctx.beginPath();
+  ctx.lineWidth = 1;
+  ctx.moveTo(boid.loc.x, boid.loc.y);
+  // Front
+  ctx.lineTo(boid.loc.x + boid.vel.x * scale, boid.loc.y + boid.vel.y * scale);
+  // Sites
+  ctx.lineTo(boid.loc.x - boid.vel.x * scale, boid.loc.y + boid.vel.y * scale);
+  ctx.lineTo(boid.loc.x + boid.vel.x * scale, boid.loc.y - boid.vel.y * scale);
+  // Front
+  ctx.lineTo(boid.loc.x + boid.vel.x * scale, boid.loc.y + boid.vel.y * scale);
+  // Back
+  ctx.lineTo(boid.loc.x - boid.vel.x * 2 * scale, boid.loc.y - boid.vel.y * 2 * scale);
+  // Sites
+  ctx.lineTo(boid.loc.x - boid.vel.x * scale, boid.loc.y + boid.vel.y * scale);
+  ctx.lineTo(boid.loc.x + boid.vel.x * scale, boid.loc.y - boid.vel.y * scale);
+  // Back
+  ctx.lineTo(boid.loc.x - boid.vel.x * 2 * scale, boid.loc.y - boid.vel.y * 2 * scale);
+  // Sites
+  ctx.lineTo(boid.loc.x - boid.vel.x * scale, boid.loc.y + boid.vel.y * scale);
+  ctx.lineTo(boid.loc.x + boid.vel.x * scale, boid.loc.y - boid.vel.y * scale);
+
+  ctx.shadowColor = '#ff3300';
+  ctx.shadowBlur = 20;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
+  ctx.strokeStyle = '#ff3300';
+  ctx.stroke();
+}
 
 ticker(window, 60).on('tick', function() {
 
@@ -82,33 +114,13 @@ ticker(window, 60).on('tick', function() {
   });
   
 }).on('draw', function() {
-  var drawBoid = function(vec) {
-    ctx.beginPath();
-    ctx.arc(vec.x, vec.y, 5, 0, 2 * Math.PI, false);
-    ctx.fill();
-    ctx.lineWidth = 1;
-    ctx.stroke();
-  }
   var halfHeight = canvas.height/2
   var halfWidth  = canvas.width/2
 
-  ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
+  ctx.fillStyle = "rgba(0, 0, 0, 1)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   boids.forEach(function(boid, i) {
-//      var cntr = center(boids, i);
-//
-//      ctx.beginPath();
-//      ctx.strokeStyle = 'red';
-//      ctx.moveTo(boid.loc.x,boid.loc.y);
-//      ctx.lineTo(cntr.x,cntr.y);
-//      ctx.stroke();
-//      ctx.fillStyle = 'green';
-//
-//      drawBoid(cntr);
-
-      ctx.strokeStyle = 'black';
-      ctx.fillStyle = 'red';
-      drawBoid(boid.loc);
+    global.drawBoid(boid);
   })
 });
 
