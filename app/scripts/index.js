@@ -120,7 +120,7 @@ ticker(window, 60).on('tick', function() {
   ctx.fillStyle = "rgba(0, 0, 0, 1)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   boids.forEach(function(boid, i) {
-    global.drawBoid(boid);
+    drawBoid(boid);
   })
 });
 
