@@ -35,15 +35,24 @@ document.body.style.margin  = '0';
 document.body.style.padding = '0';
 document.body.appendChild(canvas);
 
+var cohesion   = false;
+var alignment  = false;
+var separation = false;
+var wind       = false;
+
 ticker(window, 60).on('tick', function() {
 
   boids.forEach(function(boid, i) {
 
     var apply = [];
-    apply.push(rules.cohesion(boids, i));
-    apply.push(rules.separation(boids, i));
-    apply.push(rules.alignment(boids, i));
-    apply.push(rules.wind(boids, i));
+    if(cohesion) 
+      apply.push(rules.cohesion(boids, i));
+    if(separation) 
+      apply.push(rules.separation(boids, i));
+    if(alignment)
+      apply.push(rules.alignment(boids, i));
+    if(wind)
+      apply.push(rules.wind(boids, i));
 
     apply.forEach(function(rule) {
       boid.vel.x = boid.vel.x + rule.x;
@@ -83,7 +92,7 @@ ticker(window, 60).on('tick', function() {
   var halfHeight = canvas.height/2
   var halfWidth  = canvas.width/2
 
-  ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
+  ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   boids.forEach(function(boid, i) {
 //      var cntr = center(boids, i);
@@ -102,3 +111,16 @@ ticker(window, 60).on('tick', function() {
       drawBoid(boid.loc);
   })
 });
+
+$("#cohesion").change(function () {
+  cohesion = $(this).is(":checked");
+}).change();
+$("#alignment").change(function () {
+  alignment = $(this).is(":checked");
+}).change();
+$("#separation").change(function () {
+  separation = $(this).is(":checked");
+}).change();
+$("#wind").change(function () {
+  wind = $(this).is(":checked");
+}).change();
