@@ -37,7 +37,7 @@ rules.neighbors = function(boids, j, radius) {
 }
 
 rules.cohesion = function(boids, j) {
-  var neighbors = rules.neighbors(boids, j, 200);
+  var neighbors = rules.neighbors(boids, j, 50);
   neighbors.push(boids[j]);
   var cntr = rules.center(neighbors, neighbors.length-1);
 
@@ -53,11 +53,13 @@ rules.separation = function(boids, j) {
   for(var i=0; i<boids.length; i++) {
     if(i!==j) {
       var distanceVector = boids[i].loc.clone().subtract(boids[j].loc);
-      var l = distanceVector.length();
+      var distance       = distanceVector.length();
 
-      if(l < 20) {
-        var x = Math.cos(l / 20 * Math.PI / 2);
-        vector.subtract(distanceVector.scale(x));
+      if(distance < 20) {
+        if(distance===0) 
+          distance = 0.000000001;
+        distanceVector.scale(-Math.log(distance)+3);
+        vector.subtract(distanceVector);
       }
     }
   }
@@ -66,14 +68,13 @@ rules.separation = function(boids, j) {
 
 rules.alignment = function(boids, j) {
   var vector = new Vector(0, 0);
-  for(var i=0; i<boids.length; i++) {
-    if(i!==j) {
-      vector.x += boids[i].vel.x
-      vector.y += boids[i].vel.y
-    }
+  var neighbors = rules.neighbors(boids, j, 150);
+  for(var i=0; i<neighbors.length; i++) {
+    vector.x += neighbors[i].vel.x
+    vector.y += neighbors[i].vel.y
   }
-  vector.x /= (boids.length-1)
-  vector.y /= (boids.length-1)
+  vector.x /= (neighbors.length-1)
+  vector.y /= (neighbors.length-1)
 
   vector.subtract(boids[j].vel);
   vector.x /= 8
@@ -83,7 +84,7 @@ rules.alignment = function(boids, j) {
 };
 
 rules.wind = function(boids, j) {
-  return new Vector(1.3, 1.1);
+  return new Vector(0.3, 0.1);
 }
 
 rules.moveToMouse = function(boids, j) {
