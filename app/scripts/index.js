@@ -46,23 +46,21 @@ var drawBoid = function(boid) {
 
   ctx.beginPath();
   ctx.lineWidth = 1;
-  ctx.moveTo(boid.loc.x, boid.loc.y);
-  // Front
-  ctx.lineTo(boid.loc.x + boid.vel.x * scale, boid.loc.y + boid.vel.y * scale);
-  // Sites
-  ctx.lineTo(boid.loc.x - boid.vel.x * scale, boid.loc.y + boid.vel.y * scale);
-  ctx.lineTo(boid.loc.x + boid.vel.x * scale, boid.loc.y - boid.vel.y * scale);
-  // Front
-  ctx.lineTo(boid.loc.x + boid.vel.x * scale, boid.loc.y + boid.vel.y * scale);
-  // Back
+  // 1) Move to front
+  ctx.moveTo(boid.loc.x + boid.vel.x * scale, boid.loc.y + boid.vel.y * scale);
+  // 2) Draw to the back
   ctx.lineTo(boid.loc.x - boid.vel.x * 2 * scale, boid.loc.y - boid.vel.y * 2 * scale);
-  // Sites
-  ctx.lineTo(boid.loc.x - boid.vel.x * scale, boid.loc.y + boid.vel.y * scale);
+  // 3) Draw to the left site
   ctx.lineTo(boid.loc.x + boid.vel.x * scale, boid.loc.y - boid.vel.y * scale);
-  // Back
-  ctx.lineTo(boid.loc.x - boid.vel.x * 2 * scale, boid.loc.y - boid.vel.y * 2 * scale);
-  // Sites
+  // 4) Draw to the front
+  ctx.lineTo(boid.loc.x + boid.vel.x * scale, boid.loc.y + boid.vel.y * scale);
+  // 5) Draw to the right site
   ctx.lineTo(boid.loc.x - boid.vel.x * scale, boid.loc.y + boid.vel.y * scale);
+  // 6) Draw to the back
+  ctx.lineTo(boid.loc.x - boid.vel.x * 2 * scale, boid.loc.y - boid.vel.y * 2 * scale);
+  // 7) Move back to right site
+  ctx.moveTo(boid.loc.x - boid.vel.x * scale, boid.loc.y + boid.vel.y * scale);
+  // 8) Draw to left site
   ctx.lineTo(boid.loc.x + boid.vel.x * scale, boid.loc.y - boid.vel.y * scale);
 
   ctx.shadowColor = '#ff3300';
