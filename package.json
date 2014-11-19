@@ -5,6 +5,7 @@
     "browserify": "^6.3.2",
     "gulp": "^3.8.10",
     "gulp-sass": "^1.1.0",
+    "node-bourbon": "^1.2.3",
     "vinyl-transform": "0.0.1"
   },
   "dependencies": {
