@@ -42,26 +42,28 @@ var separation = true;
 var pause      = false;
 
 var drawBoid = function(boid) {
-  var scale = 5
+  var scale = 5;
+
+  var velocity = boid.vel.clone().normalize();
 
   ctx.beginPath();
   ctx.lineWidth = 1;
   // 1) Move to front
-  ctx.moveTo(boid.loc.x + boid.vel.x * scale, boid.loc.y + boid.vel.y * scale);
+  ctx.moveTo(boid.loc.x + velocity.x * scale, boid.loc.y + velocity.y * scale);
   // 2) Draw to the back
-  ctx.lineTo(boid.loc.x - boid.vel.x * 2 * scale, boid.loc.y - boid.vel.y * 2 * scale);
+  ctx.lineTo(boid.loc.x - velocity.x * 2 * scale, boid.loc.y - velocity.y * 2 * scale);
   // 3) Draw to the left site
-  ctx.lineTo(boid.loc.x + boid.vel.x * scale, boid.loc.y - boid.vel.y * scale);
+  ctx.lineTo(boid.loc.x + velocity.x * scale, boid.loc.y - velocity.y * scale);
   // 4) Draw to the front
-  ctx.lineTo(boid.loc.x + boid.vel.x * scale, boid.loc.y + boid.vel.y * scale);
+  ctx.lineTo(boid.loc.x + velocity.x * scale, boid.loc.y + velocity.y * scale);
   // 5) Draw to the right site
-  ctx.lineTo(boid.loc.x - boid.vel.x * scale, boid.loc.y + boid.vel.y * scale);
+  ctx.lineTo(boid.loc.x - velocity.x * scale, boid.loc.y + velocity.y * scale);
   // 6) Draw to the back
-  ctx.lineTo(boid.loc.x - boid.vel.x * 2 * scale, boid.loc.y - boid.vel.y * 2 * scale);
+  ctx.lineTo(boid.loc.x - velocity.x * 2 * scale, boid.loc.y - velocity.y * 2 * scale);
   // 7) Move back to right site
-  ctx.moveTo(boid.loc.x - boid.vel.x * scale, boid.loc.y + boid.vel.y * scale);
+  ctx.moveTo(boid.loc.x - velocity.x * scale, boid.loc.y + velocity.y * scale);
   // 8) Draw to left site
-  ctx.lineTo(boid.loc.x + boid.vel.x * scale, boid.loc.y - boid.vel.y * scale);
+  ctx.lineTo(boid.loc.x + velocity.x * scale, boid.loc.y - velocity.y * scale);
 
   ctx.shadowColor = '#ff3300';
   ctx.shadowBlur = 20;
