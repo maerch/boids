@@ -38,7 +38,6 @@ document.body.appendChild(canvas);
 var cohesion   = true;
 var alignment  = true;
 var separation = true;
-var wind       = false;
 
 var drawBoid = function(boid) {
   var scale = 5
@@ -93,8 +92,6 @@ ticker(window, 60).on('tick', function() {
       apply.push(rules.separation(boids, i));
     if(alignment)
       apply.push(rules.alignment(boids, i));
-    if(wind)
-      apply.push(rules.wind(boids, i));
 
     apply.forEach(function(rule) {
       boid.vel.x = boid.vel.x + rule.x;
@@ -142,7 +139,4 @@ $("#alignment").change(function () {
 }).change();
 $("#separation").change(function () {
   separation = $(this).is(":checked");
-}).change();
-$("#wind").change(function () {
-  wind = $(this).is(":checked");
 }).change();
