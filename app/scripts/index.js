@@ -39,6 +39,8 @@ var cohesion   = true;
 var alignment  = true;
 var separation = true;
 
+var pause      = false;
+
 var drawBoid = function(boid) {
   var scale = 5
 
@@ -82,6 +84,7 @@ img.onload = function(){
 }
 
 ticker(window, 60).on('tick', function() {
+  if(pause) return;
 
   boids.forEach(function(boid, i) {
 
@@ -121,6 +124,8 @@ ticker(window, 60).on('tick', function() {
   });
   
 }).on('draw', function() {
+  if(pause) return;
+
   var halfHeight = canvas.height/2
   var halfWidth  = canvas.width/2
 
@@ -140,3 +145,13 @@ $("#alignment").change(function () {
 $("#separation").change(function () {
   separation = $(this).is(":checked");
 }).change();
+
+$("#menu-trigger").on('click', function() {
+  $("body").toggleClass("active");
+});
+$("#pause-trigger").on('click', function() {
+  var li = $("#pause-trigger > i");
+  li.toggleClass("fa-pause");
+  li.toggleClass("fa-play");
+  pause = !pause;
+});

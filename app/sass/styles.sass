@@ -41,15 +41,12 @@ body
 body.active #slide-controls
   left:             0px
 
-#menu-trigger
-  top:              10px
-  left:             10px
+.trigger
+  width:            20px
+  text-align:       center
   position:         fixed
   top:              10px
-  left:             10px
-  background:       $menu-color
   color:            white
-  box-shadow:       0px 0px 15px 4px fade-out($menu-color, 0.5)
   padding:          10px
   cursor:           pointer
   border-radius:    5px
@@ -58,8 +55,24 @@ body.active #slide-controls
   -webkit-transition: all 300ms
   transition:         all 300ms
 
+  background:       $menu-color
+  box-shadow:       0px 0px 15px 4px fade-out($menu-color, 0.5)
+
   &:hover
     background:     darken($menu-color, 5)
+
+#menu-trigger
+  left:             10px
+
+body.active #menu-trigger
+  left:             $menu-width + 10px
+
+#pause-trigger
+  left:             60px
+
+body.active #pause-trigger
+  left:             $menu-width + 60px
+
 
 .rules
   margin-top:       50px
@@ -73,6 +86,3 @@ body.active #slide-controls
       &.label
         text-align:   left
         padding:      5px
-
-body.active #menu-trigger
-  left:             $menu-width + 10px

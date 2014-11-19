@@ -7,7 +7,8 @@
   <link rel="stylesheet" type="text/css" href="css/styles.css">
 </head>
 <body>
-  <div id="menu-trigger"><i class="fa fa-bars"></i></div>
+  <div id="menu-trigger" class="trigger"><i class="fa fa-bars"></i></div>
+  <div id="pause-trigger" class="trigger"><i class="fa fa-pause"></i></div>
   <div id="slide-controls">
     <h1>voids</h1>
     <div class="rules">
@@ -48,12 +49,6 @@
     </div>
   </div>
   <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-  <script type="text/javascript">
-    $("#menu-trigger").on('click', function() {
-      $("body").toggleClass("active");
-      console.log("clicked");
-    });
-  </script>
   <script type="text/javascript" src="js/index.js"></script>
 </body>
 </html>
