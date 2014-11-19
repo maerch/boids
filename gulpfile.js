@@ -6,7 +6,7 @@ var sass       = require('gulp-sass');
 var paths = {
   scripts: "app/scripts/*.js",
   html:    "app/*.html",
-  sass:    ["app/sass/*.sass", "app/sass/*.scss"]
+  sass:    ["app/sass/*.sass"]
 }
 
 gulp.task("browserify", function() {
@@ -25,13 +25,16 @@ gulp.task("html", function() {
 })
 
 gulp.task("sass", function() {
+  var sassIncludePaths = require('node-bourbon').includePaths;
+  sassIncludePaths.unshift("./app/vendor/bitters");
+
   return gulp.src(paths.sass)
               .pipe(sass({
                 errLogToConsole: true, 
                 // Due to a bug we need this to handle
                 // sass syntax instead scss
                 sourceComments: 'normal',
-                includePaths:   require('node-bourbon').includePaths
+                includePaths:   sassIncludePaths
               }))
               .pipe(gulp.dest("./public/css"))
 })

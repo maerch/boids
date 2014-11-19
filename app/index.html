@@ -9,14 +9,43 @@
 <body>
   <div id="menu-trigger"><i class="fa fa-bars"></i></div>
   <div id="slide-controls">
-  <h1>voids</h1>
-  <h3>Rules</h3>
-    <form>
-      <input type="checkbox" name="rules" id="cohesion"> Cohesion<br>
-      <input type="checkbox" name="rules" id="alignment"> Alignment<br>
-      <input type="checkbox" name="rules" id="separation"> Separation<br>
-      <input type="checkbox" name="rules" id="wind"> Wind
-    </form>
+    <h1>voids</h1>
+    <div class="rules">
+      <table>
+        <tr>
+          <td class="switch">
+            <label class="label-switch">
+              <input type="checkbox" name="rules" id="cohesion" />
+              <div class="checkbox"></div>
+            </label>
+          </td>
+          <td class="label">
+            Cohesion
+          </td>
+        </tr>
+        <tr>
+          <td class="switch">
+            <label class="label-switch">
+              <input type="checkbox" name="rules" id="separation" />
+              <div class="checkbox"></div>
+            </label>
+          </td>
+          <td class="label">
+            Separation
+          </td>
+        </tr>
+        <tr>
+          <td class="switch">
+            <label class="label-switch">
+              <input type="checkbox" name="rules" id="alignment" />
+              <div class="checkbox"></div>
+            </label>
+          </td>
+          <td class="label">
+            Alignment
+          </td>
+        </tr>
+    </div>
   </div>
   <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
   <script type="text/javascript">
