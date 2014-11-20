@@ -1,6 +1,6 @@
 var Vector = require('./vector');
 
-function Boid(x, y) {
+function Boid() {
   this.loc = new Vector(
                   Math.round(Math.random() * window.innerWidth), 
                   Math.round(Math.random() * window.innerHeight)

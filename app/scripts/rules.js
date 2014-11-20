@@ -85,6 +85,14 @@ rules.alignment = function(boids, j) {
   return vector;
 };
 
+rules.tendTo = function(boids, j, tendToVec) {
+  return tendToVec.clone().subtract(boids[j].loc).divide(10);
+}
+
+rules.tendAway = function(boids, j, tendAway) {
+  return rules.tendTo(boids, j, tendAway).scale(-3);
+}
+
 rules.wind = function(boids, j) {
   return new Vector(0.3, 0.1);
 }

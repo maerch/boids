@@ -16,6 +16,12 @@ function Vector(x, y) {
     return this;
   }
 
+  this.divide = function(divisor) {
+    this.x /= divisor;
+    this.y /= divisor;
+    return this;
+  }
+
   this.subtract = function(vector) {
     this.x -= vector.x;
     this.y -= vector.y;

@@ -7,6 +7,7 @@ var Boid     = require('./boid.js');
 var rules    = require('./rules.js');
 
 var boidCount = 50;
+var predCount = 3;
 var fps       = 60;
 var canvas   = document.createElement('canvas');
 var ctx      = canvas.getContext('2d');
@@ -20,7 +21,12 @@ resizeCanvas();
 
 var boids = [];
 for(var i=0; i<boidCount; i++) {
-  boids.push(new Boid(Math.random() * 400, Math.random() * 400));
+  boids.push(new Boid());
+}
+
+var predators = [];
+for(var i=0; i<predCount; i++) {
+  predators.push(new Boid());
 }
 
 var mouse = new Vector(0, 0);
@@ -41,10 +47,50 @@ var separation = true;
 
 var pause      = false;
 
+var drawPredator = function(predator, pulse) {
+  pulse = (pulse && (pulse + 3)) || 1;
+
+  var spikes = 15
+  var scale = 5;
+  var outerRadius = 25 + Math.sin(pulse)*5;
+  var innerRadius = 25 + Math.sin(pulse + Math.PI)*5;
+  
+  var rot=Math.PI/2*3;
+  var x=predator.loc.x;
+  var y=predator.loc.y;
+  var cx=x;
+  var cy=y
+  var step=Math.PI/spikes;
+
+  ctx.shadowColor = '#ff0000';
+  ctx.shadowBlur = 20;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
+  ctx.strokeStyle = '#ff0000';
+  ctx.fillStyle   = '#ff0000'
+  ctx.beginPath();
+  ctx.moveTo(cx,cy-outerRadius)
+  for(i=0;i<spikes;i++){
+    x=cx+Math.cos(rot)*outerRadius;
+    y=cy+Math.sin(rot)*outerRadius;
+    ctx.lineTo(x,y)
+    rot+=step
+
+    x=cx+Math.cos(rot)*innerRadius;
+    y=cy+Math.sin(rot)*innerRadius;
+    ctx.lineTo(x,y)
+    rot+=step
+  }
+  ctx.lineTo(cx,cy-outerRadius);
+  ctx.lineWidth = 4
+  ctx.stroke();
+  ctx.closePath();
+}
+
 var drawBoid = function(boid) {
   var scale = 5;
 
-  var velocity = boid.vel.clone().normalize();
+  var velocity = boid.vel;
 
   ctx.beginPath();
   ctx.lineWidth = 1;
@@ -65,11 +111,11 @@ var drawBoid = function(boid) {
   // 8) Draw to left site
   ctx.lineTo(boid.loc.x + velocity.x * scale, boid.loc.y - velocity.y * scale);
 
-  ctx.shadowColor = '#ff3300';
+  ctx.shadowColor = '#ff00ff';
   ctx.shadowBlur = 20;
   ctx.shadowOffsetX = 0;
   ctx.shadowOffsetY = 0;
-  ctx.strokeStyle = '#ff3300';
+  ctx.strokeStyle = '#ff00ff';
   ctx.stroke();
 }
 
@@ -83,18 +129,47 @@ img.onload = function(){
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-ticker(window, 60).on('tick', function() {
+var wrap = function(boid) {
+  if(boid.loc.y > canvas.height) {
+    boid.loc.y = 0;
+  }
+  if(boid.loc.y < 0) {
+    boid.loc.y = canvas.height;
+  }
+  if(boid.loc.x > canvas.width) {
+    boid.loc.x = 0;
+  }
+  if(boid.loc.x < 0) {
+    boid.loc.x = canvas.width;
+  }
+}
+
+var pulse = 0;
+ticker(window, fps).on('tick', function() {
   if(pause) return;
+
+  predators.forEach(function(predator) {
+    predator.loc.x += predator.vel.x;
+    predator.loc.y += predator.vel.y;
+
+    wrap(predator);
+  })
 
   boids.forEach(function(boid, i) {
 
     var apply = [];
-    if(cohesion) 
+    if(cohesion)
       apply.push(rules.cohesion(boids, i));
     if(separation) 
       apply.push(rules.separation(boids, i));
     if(alignment)
       apply.push(rules.alignment(boids, i));
+
+    predators.forEach(function(predator) {
+      if(predator.loc.distanceTo(boids[i].loc) < 100) 
+        apply.push(rules.tendAway(boids, i, predator.loc));
+    });
+
 
     apply.forEach(function(rule) {
       boid.vel.x = boid.vel.x + rule.x;
@@ -109,22 +184,12 @@ ticker(window, 60).on('tick', function() {
     boid.loc.x += boid.vel.x
     boid.loc.y += boid.vel.y
 
-    if(boid.loc.y > canvas.height) {
-      boid.loc.y = 0;
-    }
-    if(boid.loc.y < 0) {
-      boid.loc.y = canvas.height;
-    }
-    if(boid.loc.x > canvas.width) {
-      boid.loc.x = 0;
-    }
-    if(boid.loc.x < 0) {
-      boid.loc.x = canvas.width;
-    }
+    wrap(boid);
   });
   
 }).on('draw', function() {
   if(pause) return;
+
 
   var halfHeight = canvas.height/2
   var halfWidth  = canvas.width/2
@@ -133,6 +198,11 @@ ticker(window, 60).on('tick', function() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   boids.forEach(function(boid, i) {
     drawBoid(boid);
+  })
+  pulse += 0.1
+  pulse = pulse % (Math.PI * 2);
+  predators.forEach(function(predator, i) {
+    drawPredator(predator, pulse);
   })
 });
 
