@@ -8,7 +8,7 @@ var rules    = require('./rules.js');
 
 var boidCount = 50;
 var predCount = 3;
-var foodCount = 2;
+var foodCount = 3;
 var fps       = 60;
 var canvas   = document.createElement('canvas');
 var ctx      = canvas.getContext('2d');
@@ -26,11 +26,11 @@ function hexToRgb(hex) {
     } : null;
 }
 var rgba = hexToRgb(cohesionColor);
-cohesionColor = "rgba("+rgba.r+", " + rgba.g + ", " + rgba.b + ", 0.5)"
+cohesionColor = "rgba("+rgba.r+", " + rgba.g + ", " + rgba.b + ", 0.3)"
 var rgba = hexToRgb(separationColor);
-separationColor = "rgba("+rgba.r+", " + rgba.g + ", " + rgba.b + ", 0.5)"
+separationColor = "rgba("+rgba.r+", " + rgba.g + ", " + rgba.b + ", 0.3)"
 var rgba = hexToRgb(alignmentColor);
-alignmentColor = "rgba("+rgba.r+", " + rgba.g + ", " + rgba.b + ", 0.5)"
+alignmentColor = "rgba("+rgba.r+", " + rgba.g + ", " + rgba.b + ", 0.3)"
 
 var repulsionNeighborhood  = 100;
 var attractionNeighborhood = 200;
@@ -53,9 +53,12 @@ for(var i=0; i<predCount; i++) {
 }
 
 var food = [];
+var maxResource = 200;
+var growingRate = 0.1;
+var eatingRate  = 0.2;
 for(var i=0; i<foodCount; i++) {
   var foodBoid = new Boid(i);
-  foodBoid.attraction = i * 100 + 500
+  foodBoid.resources = maxResource;
   food.push(foodBoid);
 }
 
@@ -137,7 +140,7 @@ var drawPredator = function(predator, pulse) {
     rot+=step
   }
   ctx.lineTo(cx,cy-outerRadius);
-  ctx.lineWidth = 4
+  ctx.lineWidth = 8
   ctx.stroke();
   ctx.closePath();
 }
@@ -223,6 +226,14 @@ ticker(window, fps).on('tick', function() {
     });
   }
 
+  if(foodOnCanvas) {
+    food.forEach(function(f) {
+      if(f.resources < maxResource) {
+        f.resources += growingRate;
+      }
+    })
+  }
+
   boids.forEach(function(boid, i) {
 
     var apply = [];
@@ -238,8 +249,12 @@ ticker(window, fps).on('tick', function() {
 
     if(foodOnCanvas) {
       food.forEach(function(f) {
-        if(f.loc.distanceTo(boid.loc) < attractionNeighborhood) 
-          apply.push(rules.attraction(boid, f.loc, f.attraction));
+        var distance = f.loc.distanceTo(boid.loc);
+        if(distance < f.resources) 
+          apply.push(rules.attraction(boid, f.loc, 300));
+        if(distance < 30) {
+          f.resources -= eatingRate;
+        }
       })
     }
 
@@ -274,20 +289,20 @@ ticker(window, fps).on('tick', function() {
   ctx.fillStyle = pattern;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  if(foodOnCanvas) {
+    food.forEach(function(f) {
+      var r = f.resources > 5 ? f.resources : 5
+      drawNeighborCircle(f, r, "rgba(0, 255, 0, 0.2)");
+      drawFood(f, pulse);
+    })
+  }
+
   if(predatorsOnCanvas) {
     predators.forEach(function(predator, i) {
       if(tracking) {
         drawNeighborCircle(predator, repulsionNeighborhood, "rgba(255, 0, 0, 0.5)");
       }
       drawPredator(predator, pulse);
-    })
-  }
-  if(foodOnCanvas) {
-    food.forEach(function(f) {
-      if(tracking) {
-        drawNeighborCircle(f, attractionNeighborhood, "rgba(0, 255, 0, 0.2)");
-      }
-      drawFood(f, pulse);
     })
   }
 

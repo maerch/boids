@@ -93,3 +93,15 @@
     background-color: darken(#67C8FF, 5);
     }
 }
+
+#predators:checked {
+  + .checkbox {
+    background-color: darken(#FF0000, 20);
+    }
+}
+
+#food:checked {
+  + .checkbox {
+    background-color: #BFFF00;
+    }
+}
