@@ -62,7 +62,7 @@
 
   &:checked {
     + .checkbox {
-      background: $switch-color;
+      background: $blue;
         
         &:before {
           @include transform(scale(0));
@@ -74,4 +74,22 @@
       }
     }
   }
+}
+
+#cohesion:checked {
+  + .checkbox {
+    background-color: darken(#ffff00, 2);
+    }
+}
+
+#separation:checked {
+  + .checkbox {
+    background-color: darken(#83F52C, 5);
+    }
+}
+
+#alignment:checked {
+  + .checkbox {
+    background-color: darken(#67C8FF, 5);
+    }
 }

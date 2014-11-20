@@ -13,6 +13,28 @@ var fps       = 60;
 var canvas   = document.createElement('canvas');
 var ctx      = canvas.getContext('2d');
 
+var cohesionColor = "#FFFF00";
+var separationColor = "#83F52C";
+var alignmentColor = "#67C8FF"
+
+function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+var rgba = hexToRgb(cohesionColor);
+cohesionColor = "rgba("+rgba.r+", " + rgba.g + ", " + rgba.b + ", 0.5)"
+var rgba = hexToRgb(separationColor);
+separationColor = "rgba("+rgba.r+", " + rgba.g + ", " + rgba.b + ", 0.5)"
+var rgba = hexToRgb(alignmentColor);
+alignmentColor = "rgba("+rgba.r+", " + rgba.g + ", " + rgba.b + ", 0.5)"
+
+var repulsionNeighborhood  = 100;
+var attractionNeighborhood = 200;
+
 var resizeCanvas = function() {
   canvas.width  = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -32,7 +54,9 @@ for(var i=0; i<predCount; i++) {
 
 var food = [];
 for(var i=0; i<foodCount; i++) {
-  food.push(new Boid(i));
+  var foodBoid = new Boid(i);
+  foodBoid.attraction = i * 100 + 500
+  food.push(foodBoid);
 }
 
 var mouse = new Vector(0, 0);
@@ -50,10 +74,22 @@ document.body.appendChild(canvas);
 var cohesion          = true;
 var alignment         = true;
 var separation        = true;
+
 var predatorsOnCanvas = false;
 var foodOnCanvas      = false;
 
 var pause      = false;
+var tracking   = false;
+
+var drawNeighborCircle = function(boid, radius, color) {
+  ctx.beginPath();
+  ctx.arc(boid.loc.x, boid.loc.y, radius, 0, 2 * Math.PI, false);
+  ctx.lineWidth = 1;
+  ctx.shadowColor = color;
+  ctx.fillStyle   = color;
+  ctx.fill();
+  ctx.closePath();
+}
 
 var drawFood = function(food, pulse) {
   pulse = (pulse && (pulse + 3)) || 1;
@@ -202,14 +238,14 @@ ticker(window, fps).on('tick', function() {
 
     if(foodOnCanvas) {
       food.forEach(function(f) {
-        if(f.loc.distanceTo(boid.loc) < 300) 
-          apply.push(rules.attraction(boid, f.loc));
+        if(f.loc.distanceTo(boid.loc) < attractionNeighborhood) 
+          apply.push(rules.attraction(boid, f.loc, f.attraction));
       })
     }
 
     if(predatorsOnCanvas) {
       predators.forEach(function(predator) {
-        if(predator.loc.distanceTo(boid.loc) < 100) 
+        if(predator.loc.distanceTo(boid.loc) < repulsionNeighborhood) 
           apply.push(rules.repulsion(boid, predator.loc));
       });
     }
@@ -229,28 +265,55 @@ ticker(window, fps).on('tick', function() {
   
 }).on('draw', function() {
   if(pause) return;
-
+  pulse += 0.1
+  pulse = pulse % (Math.PI * 2);
 
   var halfHeight = canvas.height/2
   var halfWidth  = canvas.width/2
 
   ctx.fillStyle = pattern;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  boids.forEach(function(boid, i) {
-    drawBoid(boid);
-  })
-  pulse += 0.1
-  pulse = pulse % (Math.PI * 2);
+
   if(predatorsOnCanvas) {
     predators.forEach(function(predator, i) {
+      if(tracking) {
+        drawNeighborCircle(predator, repulsionNeighborhood, "rgba(255, 0, 0, 0.5)");
+      }
       drawPredator(predator, pulse);
     })
   }
   if(foodOnCanvas) {
     food.forEach(function(f) {
+      if(tracking) {
+        drawNeighborCircle(f, attractionNeighborhood, "rgba(0, 255, 0, 0.2)");
+      }
       drawFood(f, pulse);
     })
   }
+
+  if(alignment && tracking) {
+    drawNeighborCircle(boids[0], 150, alignmentColor);
+  }
+  if(cohesion && tracking) {
+    if(separation) {
+      if(pulse > Math.PI)
+        drawNeighborCircle(boids[0], 50, cohesionColor);
+    } else {
+      drawNeighborCircle(boids[0], 50, cohesionColor);
+    }
+  }
+  if(separation && tracking) {
+    if(cohesion) {
+      if(pulse < Math.PI)
+        drawNeighborCircle(boids[0], 50, separationColor);
+    } else {
+      drawNeighborCircle(boids[0], 50, separationColor);
+    }
+  }
+
+  boids.forEach(function(boid, i) {
+    drawBoid(boid);
+  })
 });
 
 $("#cohesion").change(function () {
@@ -277,4 +340,10 @@ $("#pause-trigger").on('click', function() {
   li.toggleClass("fa-pause");
   li.toggleClass("fa-play");
   pause = !pause;
+});
+$("#tracking-trigger").on('click', function() {
+  var li = $("#tracking-trigger > i");
+  li.toggleClass("fa-circle-thin");
+  li.toggleClass("fa-circle");
+  tracking = !tracking;
 });

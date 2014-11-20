@@ -42,7 +42,10 @@ gulp.task("sass", function() {
 gulp.task("watch", function() {
   gulp.watch(paths.scripts, ["browserify"]);
   gulp.watch(paths.html, ["html"]);
-  gulp.watch(paths.sass, ["sass"]);
+  var sassPaths = paths.sass.slice();
+  sassPaths.push("app/sass/*.scss");
+  gulp.watch(sassPaths, ["sass"]);
+
 })
 
 gulp.task("copy", ["html", "sass"]);

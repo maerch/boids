@@ -67,8 +67,9 @@ rules.alignment = function(boid, neighbors) {
   return vector;
 };
 
-rules.attraction = function(boid, attractedToVec) {
-  return attractedToVec.clone().subtract(boid.loc).divide(500);
+rules.attraction = function(boid, attractedToVec, factor) {
+  factor = factor || 500
+  return attractedToVec.clone().subtract(boid.loc).divide(factor);
 }
 
 rules.repulsion = function(boid, repulsedByVec) {
