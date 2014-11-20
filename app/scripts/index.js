@@ -41,9 +41,10 @@ document.body.style.margin  = '0';
 document.body.style.padding = '0';
 document.body.appendChild(canvas);
 
-var cohesion   = true;
-var alignment  = true;
-var separation = true;
+var cohesion          = true;
+var alignment         = true;
+var separation        = true;
+var predatorsOnCanvas = false;
 
 var pause      = false;
 
@@ -148,10 +149,12 @@ var pulse = 0;
 ticker(window, fps).on('tick', function() {
   if(pause) return;
 
-  predators.forEach(function(predator) {
-    predator.loc.add(predator.vel);
-    wrap(predator);
-  })
+  if(predatorsOnCanvas) {
+    predators.forEach(function(predator) {
+      predator.loc.add(predator.vel);
+      wrap(predator);
+    });
+  }
 
   boids.forEach(function(boid, i) {
 
@@ -166,11 +169,12 @@ ticker(window, fps).on('tick', function() {
     if(alignment)
       apply.push(rules.alignment(boid, neighbors150));
 
-    predators.forEach(function(predator) {
-      if(predator.loc.distanceTo(boids[i].loc) < 100) 
-        apply.push(rules.attraction(boid, predator.loc));
-    });
-
+    if(predatorsOnCanvas) {
+      predators.forEach(function(predator) {
+        if(predator.loc.distanceTo(boids[i].loc) < 100) 
+          apply.push(rules.attraction(boid, predator.loc));
+      });
+    }
 
     apply.forEach(function(rule) {
       boid.vel.x = boid.vel.x + rule.x;
@@ -197,11 +201,13 @@ ticker(window, fps).on('tick', function() {
   boids.forEach(function(boid, i) {
     drawBoid(boid);
   })
-  pulse += 0.1
-  pulse = pulse % (Math.PI * 2);
-  predators.forEach(function(predator, i) {
-    drawPredator(predator, pulse);
-  })
+  if(predatorsOnCanvas) {
+    pulse += 0.1
+    pulse = pulse % (Math.PI * 2);
+    predators.forEach(function(predator, i) {
+      drawPredator(predator, pulse);
+    })
+  }
 });
 
 $("#cohesion").change(function () {
@@ -212,6 +218,9 @@ $("#alignment").change(function () {
 }).change();
 $("#separation").change(function () {
   separation = $(this).is(":checked");
+}).change();
+$("#predators").change(function () {
+  predatorsOnCanvas = $(this).is(":checked");
 }).change();
 
 $("#menu-trigger").on('click', function() {
