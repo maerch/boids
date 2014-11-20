@@ -3,14 +3,12 @@ var Vector = require('./vector.js');
 var rules = {};
 
 rules.center = function(boid, boids) {
-  if(boids.length===0) {
+  if(boids.length===1) {
     return boid.loc.clone();
-  } else if(boids.length===1) {
-    return boids[0].loc.clone();
   } else {
     var vector = new Vector(0, 0);
     boids.forEach(function(current) {
-      if(current!==boid) {
+      if(current.id!==boid.id) {
         vector.add(current.loc);
       }
     });
@@ -21,7 +19,7 @@ rules.center = function(boid, boids) {
 rules.neighbors = function(boid, boids, radius) {
   var neighbors = [];
   boids.forEach(function(current) {
-    if(current!==boid) {
+    if(current.id!==boid.id) {
       var distance = current.loc.distanceTo(boid.loc);
       if(distance < radius) {
         neighbors.push(current);
@@ -32,7 +30,7 @@ rules.neighbors = function(boid, boids, radius) {
 }
 
 rules.cohesion = function(boid, neighbors) {
-  if(neighbors.length === 0) return new Vector(0, 0);
+  neighbors.push(boid);
   var cntr = rules.center(boid, neighbors);
   return cntr.subtract(boid.loc).divide(100);
 };
@@ -40,7 +38,7 @@ rules.cohesion = function(boid, neighbors) {
 rules.separation = function(boid, neighbors) {
   var vector = new Vector(0, 0);
   neighbors.forEach(function(neighbor) {
-    if(boid!=neighbor) {
+    if(boid.id!=neighbor.id) {
       var distanceVector = neighbor.loc.clone().subtract(boid.loc);
       var distance       = distanceVector.length();
 

@@ -21,12 +21,12 @@ resizeCanvas();
 
 var boids = [];
 for(var i=0; i<boidCount; i++) {
-  boids.push(new Boid());
+  boids.push(new Boid(i));
 }
 
 var predators = [];
 for(var i=0; i<predCount; i++) {
-  predators.push(new Boid());
+  predators.push(new Boid(i));
 }
 
 var mouse = new Vector(0, 0);
