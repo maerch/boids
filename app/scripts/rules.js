@@ -2,108 +2,79 @@ var Vector = require('./vector.js');
 
 var rules = {};
 
-rules.center = function(boids, j) {
-  var vector = new Vector(0, 0);
-  var boid   = boids[j];
-
-  if(boids.length===1) {
-    vector = boid.loc.clone();
+rules.center = function(boid, boids) {
+  if(boids.length===0) {
+    return boid.loc.clone();
+  } else if(boids.length===1) {
+    return boids[0].loc.clone();
   } else {
-    for(var i=0; i<boids.length; i++) {
-      if(i!==j) {
-        var current = boids[i].loc;
-        vector.add(current);
+    var vector = new Vector(0, 0);
+    boids.forEach(function(current) {
+      if(current!==boid) {
+        vector.add(current.loc);
       }
-    }
-    vector.x /= (boids.length-1)
-    vector.y /= (boids.length-1)
+    });
+    return vector.divide(boids.length-1);
   }
-  return vector;
 }
 
-rules.neighbors = function(boids, j, radius) {
-  var boid      = boids[j];
+rules.neighbors = function(boid, boids, radius) {
   var neighbors = [];
-  for(var i=0; i<boids.length; i++) {
-    if(i!==j) {
-      var current = boids[i].loc;
-      var distance = current.distanceTo(boid.loc);
+  boids.forEach(function(current) {
+    if(current!==boid) {
+      var distance = current.loc.distanceTo(boid.loc);
       if(distance < radius) {
-        neighbors.push(boids[i]);
+        neighbors.push(current);
       }
     }
-  }
+  });
   return neighbors;
 }
 
-rules.cohesion = function(boids, j) {
-  var neighbors = rules.neighbors(boids, j, 50);
-  neighbors.push(boids[j]);
+rules.cohesion = function(boid, neighbors) {
   if(neighbors.length === 0) return new Vector(0, 0);
-  var cntr = rules.center(neighbors, neighbors.length-1);
-
-  cntr.subtract(boids[j].loc);
-  cntr.x /= 100;
-  cntr.y /= 100;
-
-  return cntr;
+  var cntr = rules.center(boid, neighbors);
+  return cntr.subtract(boid.loc).divide(100);
 };
 
-rules.separation = function(boids, j) {
+rules.separation = function(boid, neighbors) {
   var vector = new Vector(0, 0);
-  for(var i=0; i<boids.length; i++) {
-    if(i!==j) {
-      var distanceVector = boids[i].loc.clone().subtract(boids[j].loc);
+  neighbors.forEach(function(neighbor) {
+    if(boid!=neighbor) {
+      var distanceVector = neighbor.loc.clone().subtract(boid.loc);
       var distance       = distanceVector.length();
 
       if(distance < 20) {
         if(distance===0) 
-          distance = 0.000000001;
+          distance = 0.0001;
         distanceVector.scale(-Math.log(distance)+3);
         vector.subtract(distanceVector);
       }
     }
-  }
+  })
   return vector;
 };
 
-rules.alignment = function(boids, j) {
+rules.alignment = function(boid, neighbors) {
   var vector = new Vector(0, 0);
-  var neighbors = rules.neighbors(boids, j, 150);
   if(neighbors.length === 0) return new Vector(0, 0);
-  for(var i=0; i<neighbors.length; i++) {
-    vector.x += neighbors[i].vel.x
-    vector.y += neighbors[i].vel.y
-  }
-  vector.x /= (neighbors.length)
-  vector.y /= (neighbors.length)
+  neighbors.forEach(function(neighbor) {
+    vector.add(neighbor.vel);
+  })
 
-  vector.subtract(boids[j].vel);
-  vector.x /= 8
-  vector.y /= 8
+  vector.divide(neighbors.length);
+  vector.subtract(boid.vel);
+  vector.divide(8);
 
   return vector;
 };
 
-rules.tendTo = function(boids, j, tendToVec) {
-  return tendToVec.clone().subtract(boids[j].loc).divide(10);
+rules.attraction = function(boid, attractedToVec) {
+  return attractedToVec.clone().subtract(boid.loc).divide(40);
 }
 
-rules.tendAway = function(boids, j, tendAway) {
-  return rules.tendTo(boids, j, tendAway).scale(-3);
-}
-
-rules.wind = function(boids, j) {
-  return new Vector(0.3, 0.1);
-}
-
-rules.moveToMouse = function(boids, j) {
-  var v = mouse.clone().subtract(boids[j].loc);
-
-  v.x /= 100;
-  v.y /= 100;
-
-  return v;
+rules.repulsion = function(boid, repulsedByVec) {
+  return rules.attraction(boid, repulsedByVec).scale(-3);
 }
 
 module.exports = rules;

@@ -7,7 +7,7 @@ var Boid     = require('./boid.js');
 var rules    = require('./rules.js');
 
 var boidCount = 50;
-var predCount = 3;
+var predCount = 2;
 var fps       = 60;
 var canvas   = document.createElement('canvas');
 var ctx      = canvas.getContext('2d');
@@ -149,25 +149,26 @@ ticker(window, fps).on('tick', function() {
   if(pause) return;
 
   predators.forEach(function(predator) {
-    predator.loc.x += predator.vel.x;
-    predator.loc.y += predator.vel.y;
-
+    predator.loc.add(predator.vel);
     wrap(predator);
   })
 
   boids.forEach(function(boid, i) {
 
     var apply = [];
+    var neighbors50  = rules.neighbors(boid, boids, 50);
+    var neighbors150 = rules.neighbors(boid, boids, 150);
+
     if(cohesion)
-      apply.push(rules.cohesion(boids, i));
-    if(separation) 
-      apply.push(rules.separation(boids, i));
+      apply.push(rules.cohesion(boid, neighbors50));
+    if(separation)
+      apply.push(rules.separation(boid, neighbors50));
     if(alignment)
-      apply.push(rules.alignment(boids, i));
+      apply.push(rules.alignment(boid, neighbors150));
 
     predators.forEach(function(predator) {
       if(predator.loc.distanceTo(boids[i].loc) < 100) 
-        apply.push(rules.tendAway(boids, i, predator.loc));
+        apply.push(rules.attraction(boid, predator.loc));
     });
 
 
@@ -176,14 +177,11 @@ ticker(window, fps).on('tick', function() {
       boid.vel.y = boid.vel.y + rule.y;
     })
 
-    var len = boid.vel.length();
-    if(len>3) {
+    if(boid.vel.length()>3) {
       boid.vel.normalize().scale(3);
     }
 
-    boid.loc.x += boid.vel.x
-    boid.loc.y += boid.vel.y
-
+    boid.loc.add(boid.vel);
     wrap(boid);
   });
   
