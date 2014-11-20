@@ -7,7 +7,7 @@ var Boid     = require('./boid.js');
 var rules    = require('./rules.js');
 
 var boidCount = 50;
-var predCount = 2;
+var predCount = 5;
 var fps       = 60;
 var canvas   = document.createElement('canvas');
 var ctx      = canvas.getContext('2d');
@@ -151,6 +151,19 @@ ticker(window, fps).on('tick', function() {
 
   if(predatorsOnCanvas) {
     predators.forEach(function(predator) {
+      var apply = [];
+      var neighborPredators = rules.neighbors(predator, predators, 50);
+      var neighborBoids     = rules.neighbors(predator, boids, 150);
+
+      apply.push(rules.separation(predator, neighborPredators));
+      apply.push(rules.cohesion(predator, neighborBoids));
+
+      apply.forEach(function(rule) {
+        predator.vel.x = predator.vel.x + rule.x;
+        predator.vel.y = predator.vel.y + rule.y;
+      })
+
+      predator.vel.normalize().scale(0.5);
       predator.loc.add(predator.vel);
       wrap(predator);
     });
@@ -172,7 +185,7 @@ ticker(window, fps).on('tick', function() {
     if(predatorsOnCanvas) {
       predators.forEach(function(predator) {
         if(predator.loc.distanceTo(boids[i].loc) < 100) 
-          apply.push(rules.attraction(boid, predator.loc));
+          apply.push(rules.repulsion(boid, predator.loc));
       });
     }
 
