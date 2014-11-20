@@ -7,7 +7,8 @@ var Boid     = require('./boid.js');
 var rules    = require('./rules.js');
 
 var boidCount = 50;
-var predCount = 5;
+var predCount = 3;
+var foodCount = 2;
 var fps       = 60;
 var canvas   = document.createElement('canvas');
 var ctx      = canvas.getContext('2d');
@@ -29,6 +30,11 @@ for(var i=0; i<predCount; i++) {
   predators.push(new Boid(i));
 }
 
+var food = [];
+for(var i=0; i<foodCount; i++) {
+  food.push(new Boid(i));
+}
+
 var mouse = new Vector(0, 0);
 
 document.addEventListener('mousemove', function(e) {
@@ -45,8 +51,20 @@ var cohesion          = true;
 var alignment         = true;
 var separation        = true;
 var predatorsOnCanvas = false;
+var foodOnCanvas      = false;
 
 var pause      = false;
+
+var drawFood = function(food, pulse) {
+  pulse = (pulse && (pulse + 3)) || 1;
+  ctx.beginPath();
+  ctx.arc(food.loc.x, food.loc.y, 20, 0, 2 * Math.PI, false);
+  ctx.lineWidth = 25 + Math.sin(pulse) * 5;
+  ctx.shadowColor = '#BFFF00';
+  ctx.strokeStyle = '#BFFF00';
+  ctx.stroke();
+  ctx.closePath();
+};
 
 var drawPredator = function(predator, pulse) {
   pulse = (pulse && (pulse + 3)) || 1;
@@ -182,9 +200,16 @@ ticker(window, fps).on('tick', function() {
     if(alignment)
       apply.push(rules.alignment(boid, neighbors150));
 
+    if(foodOnCanvas) {
+      food.forEach(function(f) {
+        if(f.loc.distanceTo(boid.loc) < 300) 
+          apply.push(rules.attraction(boid, f.loc));
+      })
+    }
+
     if(predatorsOnCanvas) {
       predators.forEach(function(predator) {
-        if(predator.loc.distanceTo(boids[i].loc) < 100) 
+        if(predator.loc.distanceTo(boid.loc) < 100) 
           apply.push(rules.repulsion(boid, predator.loc));
       });
     }
@@ -214,11 +239,16 @@ ticker(window, fps).on('tick', function() {
   boids.forEach(function(boid, i) {
     drawBoid(boid);
   })
+  pulse += 0.1
+  pulse = pulse % (Math.PI * 2);
   if(predatorsOnCanvas) {
-    pulse += 0.1
-    pulse = pulse % (Math.PI * 2);
     predators.forEach(function(predator, i) {
       drawPredator(predator, pulse);
+    })
+  }
+  if(foodOnCanvas) {
+    food.forEach(function(f) {
+      drawFood(f, pulse);
     })
   }
 });
@@ -234,6 +264,9 @@ $("#separation").change(function () {
 }).change();
 $("#predators").change(function () {
   predatorsOnCanvas = $(this).is(":checked");
+}).change();
+$("#food").change(function () {
+  foodOnCanvas = $(this).is(":checked");
 }).change();
 
 $("#menu-trigger").on('click', function() {
