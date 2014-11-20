@@ -62,11 +62,15 @@ for(var i=0; i<foodCount; i++) {
   food.push(foodBoid);
 }
 
-var mouse = new Vector(0, 0);
-
-document.addEventListener('mousemove', function(e) {
-  mouse.x = e.clientX || e.pageX;
-  mouse.y = e.clientY || e.pageY;
+var scatter = false;
+var scatterPos = new Vector(0, 0);
+canvas.addEventListener('click', function(e) {
+  scatterPos.x = e.clientX || e.pageX;
+  scatterPos.y = e.clientY || e.pageY;
+  scatter = true;
+  setTimeout(function() {
+    scatter = false;
+  }, 500);
 }, false);
 
 
@@ -85,8 +89,9 @@ var pause      = false;
 var tracking   = false;
 
 var drawNeighborCircle = function(boid, radius, color) {
+  var loc = boid.loc ? boid.loc : boid;
   ctx.beginPath();
-  ctx.arc(boid.loc.x, boid.loc.y, radius, 0, 2 * Math.PI, false);
+  ctx.arc(loc.x, loc.y, radius, 0, 2 * Math.PI, false);
   ctx.lineWidth = 1;
   ctx.shadowColor = color;
   ctx.fillStyle   = color;
@@ -247,6 +252,11 @@ ticker(window, fps).on('tick', function() {
     if(alignment)
       apply.push(rules.alignment(boid, neighbors150));
 
+    if(scatter) {
+      if(scatterPos.distanceTo(boid.loc) < 200) 
+      apply.push(rules.repulsion(boid, scatterPos, -20));
+    }
+
     if(foodOnCanvas) {
       food.forEach(function(f) {
         var distance = f.loc.distanceTo(boid.loc);
@@ -326,6 +336,9 @@ ticker(window, fps).on('tick', function() {
     }
   }
 
+  if(scatter) {
+    drawNeighborCircle(scatterPos, (Math.sin(pulse*30) + 3) * 30, "rgba(255, 0, 0, 0.3)");
+  }
   boids.forEach(function(boid, i) {
     drawBoid(boid);
   })

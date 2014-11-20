@@ -72,8 +72,9 @@ rules.attraction = function(boid, attractedToVec, factor) {
   return attractedToVec.clone().subtract(boid.loc).divide(factor);
 }
 
-rules.repulsion = function(boid, repulsedByVec) {
-  return rules.attraction(boid, repulsedByVec).scale(-3);
+rules.repulsion = function(boid, repulsedByVec, factor) {
+  factor = factor || -3
+  return rules.attraction(boid, repulsedByVec).scale(factor);
 }
 
 module.exports = rules;
