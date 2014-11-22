@@ -5,7 +5,7 @@ var sass       = require('gulp-sass');
 
 var paths = {
   scripts: "app/scripts/*.js",
-  html:    "app/*.html",
+  html:    ["app/*.html", "app/favicon.ico"],
   sass:    ["app/sass/*.sass"]
 }
 
@@ -20,7 +20,7 @@ gulp.task("browserify", function() {
 });
 
 gulp.task("html", function() {
-  return gulp.src([paths.html])
+  return gulp.src(paths.html)
               .pipe(gulp.dest("./public"))
 })
 
