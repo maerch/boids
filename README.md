@@ -5,6 +5,8 @@ Voids (void-oid objects)
 
 This is an implementation in JavaScript where every rules can be activated or deactivated individually.
 
+![voids](docs/images/voids.gif)
+
 ## Installation
 
 ```
