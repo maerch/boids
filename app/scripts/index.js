@@ -180,6 +180,7 @@ var drawBoid = function(boid) {
   ctx.shadowOffsetY = 0;
   ctx.strokeStyle = '#ff00ff';
   ctx.stroke();
+  ctx.closePath();
 }
 
 var pattern;
