@@ -13,7 +13,7 @@ function Quadtree(x1, y1, x2, y2, level) {
 
 Quadtree.prototype = {
   MAX_OBJECTS: 5,
-  MAX_LEVEL:   5
+  MAX_LEVEL:   10
 }
 
 Quadtree.prototype.insert = function(object) {
@@ -56,10 +56,37 @@ Quadtree.prototype.split = function() {
   this.objects.length = 0;
 }
 
-Quadtree.prototype.retrieve = function(x1, y1, x2, y2) {
-  var points = [];
-
-  return points;
+Quadtree.prototype.visit = function(callback) {
+  if(!callback(this.objects, this.x1, this.y1, this.x2, this.y2) && !this.leaf) {
+    this.nodes.forEach(function(node) {
+      node.visit(callback);
+    });
+  }
 }
+
+Quadtree.prototype.retrieve = function(x1, y1, x2, y2) {
+  var found = [];
+  var scanned = 0;
+  this.visit(function(objects, qx1, qy1, qx2, qy2) {
+    objects.forEach(function(o) {
+      scanned++;
+      if((o.x >= x1) && (o.x < x2) && (o.y >= y1) && (o.y < y2)) {
+        found.push(o);
+      }
+    });
+    return qx1 >= x2 || qy1 >= y2 || qx2 < x1 || qy2 < y1;
+  });
+  console.log("Objects scanned: " + scanned + " and objects found: " + found.length);
+  return found;
+}
+
+var root = new Quadtree(0, 0, 100, 100);
+for(var i=0; i<100000; i++) {
+  var x = Math.random()*100;
+  var y = Math.random()*100;
+  root.insert({x: x, y: y});
+}
+
+root.retrieve(0, 0, 10, 10);
 
 module.exports = Quadtree;
