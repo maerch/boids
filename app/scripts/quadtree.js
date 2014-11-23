@@ -27,19 +27,23 @@ Quadtree.prototype.insert = function(object) {
       return this;
     } else {
       this.split();
-      return this.insert(x, y);
+      return this.insert(object);
     }
   } else {
-    var upper = (y<(y2-y1)/2);
-    var left  = (x<(x2-x1)/2);
+    var upper = (y<(this.y2-this.y1)/2);
+    var lower = !upper;
+    var left  = (x<(this.x2-this.x1)/2);
+    var right = !left;
     if(upper && left)  return this.nodes[0].insert(object);
-    if(upper)          return this.nodes[1].insert(object);
+    if(upper && right) return this.nodes[1].insert(object);
     if(lower && left)  return this.nodes[2].insert(object);
-    if(lower)          return this.nodes[3].insert(object);
+    if(lower && right) return this.nodes[3].insert(object);
   }
 }
 
 Quadtree.prototype.split = function() {
+  var x1 = this.x1, x2 = this.x2, y1 = this.y1, y2 = this.y2, level = this.level;
+
   this.leaf     = false;
   this.nodes[0] = new Quadtree(x1,        y1,        (x2-x1)/2, (y2-y1)/2, level+1);
   this.nodes[1] = new Quadtree((x2-x1)/2, y1,         x2,       (y2-y1)/2, level+1);
@@ -52,7 +56,7 @@ Quadtree.prototype.split = function() {
   this.objects.length = 0;
 }
 
-Quadtree.prototype.retrieve(x1, y1, x2, y2) {
+Quadtree.prototype.retrieve = function(x1, y1, x2, y2) {
   var points = [];
 
   return points;
