@@ -16,11 +16,14 @@ Quadtree.prototype = {
   MAX_LEVEL:   5
 }
 
-Quadtree.prototype.insert = function(x, y) {
+Quadtree.prototype.insert = function(object) {
+  var x = object.x;
+  var y = object.y;
   if(isNaN(x) || isNaN(y)) return;
+
   if(this.leaf) {
     if(this.objects.length<this.MAX_OBJECTS || this.level === this.MAX_LEVEL) {
-      this.objects.push({x: x, y: y});
+      this.objects.push(object);
       return this;
     } else {
       this.split();
@@ -29,15 +32,24 @@ Quadtree.prototype.insert = function(x, y) {
   } else {
     var upper = (y<(y2-y1)/2);
     var left  = (x<(x2-x1)/2);
-    if(upper && left)  return this.nodes[0].insert(x, y);
-    if(upper)          return this.nodes[1].insert(x, y);
-    if(lower && left)  return this.nodes[2].insert(x, y);
-    if(lower)          return this.nodes[3].insert(x, y);
+    if(upper && left)  return this.nodes[0].insert(object);
+    if(upper)          return this.nodes[1].insert(object);
+    if(lower && left)  return this.nodes[2].insert(object);
+    if(lower)          return this.nodes[3].insert(object);
   }
 }
 
 Quadtree.prototype.split = function() {
+  this.leaf     = false;
+  this.nodes[0] = new Quadtree(x1,        y1,        (x2-x1)/2, (y2-y1)/2, level+1);
+  this.nodes[1] = new Quadtree((x2-x1)/2, y1,         x2,       (y2-y1)/2, level+1);
+  this.nodes[2] = new Quadtree(x1,        (y2-y1)/2, (x2-x1)/2, y2,        level+1);
+  this.nodes[3] = new Quadtree((x2-x1)/2, (y2-y1)/2, x2,        y2,        level+1);
 
+  this.objects.forEach(function(object) {
+    this.insert(object);
+  }.bind(this));
+  this.objects.length = 0;
 }
 
 Quadtree.prototype.retrieve(x1, y1, x2, y2) {
