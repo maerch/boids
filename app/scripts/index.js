@@ -215,7 +215,7 @@ ticker(window, fps).on('tick', function() {
 
   var quadtree = new Quadtree(0, 0, canvas.width, canvas.height);
   boids.forEach(function(boid) {
-    quadtree.insert({x: boid.x, y: boid.y, boid});
+    quadtree.insert({x: boid.x, y: boid.y, boid: boid});
   });
 
   if(predatorsOnCanvas) {
