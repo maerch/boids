@@ -3,6 +3,7 @@ var ticker   = require('ticker');
 
 var Vector   = require('./vector.js');
 var Boid     = require('./boid.js');
+var Quadtree = require('./quadtree.js');
 
 var rules    = require('./rules.js');
 
@@ -212,13 +213,16 @@ var pulse = 0;
 ticker(window, fps).on('tick', function() {
   if(pause) return;
 
+  var quadtree = new Quadtree(0, 0, canvas.width, canvas.height);
+  boids.forEach(function(boid) {
+    quadtree.insert({x: boid.x, y: boid.y, boid});
+  });
+
   if(predatorsOnCanvas) {
     predators.forEach(function(predator) {
       var apply = [];
-      var neighborPredators = rules.neighbors(predator, predators, 50);
-      var neighborBoids     = rules.neighbors(predator, boids, 150);
+      var neighborBoids     = rules.neighbors(predator, quadtree, 150);
 
-      apply.push(rules.separation(predator, neighborPredators));
       apply.push(rules.cohesion(predator, neighborBoids));
 
       apply.forEach(function(rule) {
@@ -243,8 +247,8 @@ ticker(window, fps).on('tick', function() {
   boids.forEach(function(boid, i) {
 
     var apply = [];
-    var neighbors50  = rules.neighbors(boid, boids, 50);
-    var neighbors150 = rules.neighbors(boid, boids, 150);
+    var neighbors50  = rules.neighbors(boid, quadtree, 50);
+    var neighbors150 = rules.neighbors(boid, quadtree, 150);
 
     if(cohesion)
       apply.push(rules.cohesion(boid, neighbors50));
