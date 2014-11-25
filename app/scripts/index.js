@@ -83,8 +83,8 @@ var cohesion          = true;
 var alignment         = true;
 var separation        = true;
 
-var predatorsOnCanvas = false;
-var foodOnCanvas      = false;
+var predatorsOnCanvas = true;
+var foodOnCanvas      = true;
 
 var pause      = false;
 var tracking   = false;
