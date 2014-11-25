@@ -215,7 +215,7 @@ ticker(window, fps).on('tick', function() {
 
   var quadtree = new Quadtree(0, 0, canvas.width, canvas.height);
   boids.forEach(function(boid) {
-    quadtree.insert({x: boid.x, y: boid.y, boid: boid});
+    quadtree.insert({x: boid.loc.x, y: boid.loc.y, boid: boid});
   });
 
   if(predatorsOnCanvas) {
@@ -259,7 +259,7 @@ ticker(window, fps).on('tick', function() {
 
     if(scatter) {
       if(scatterPos.distanceTo(boid.loc) < 200) 
-      apply.push(rules.repulsion(boid, scatterPos, -20));
+        apply.push(rules.repulsion(boid, scatterPos, -20));
     }
 
     if(foodOnCanvas) {
