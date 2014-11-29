@@ -4,7 +4,7 @@ var transform  = require('vinyl-transform');
 var sass       = require('gulp-sass');
 
 var paths = {
-  scripts: "app/scripts/*.js",
+  scripts: "app/scripts/index.js",
   html:    ["app/*.html", "app/favicon.ico"],
   sass:    ["app/sass/*.sass"]
 }
